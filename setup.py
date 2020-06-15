@@ -1,6 +1,7 @@
-from setuptools import setup, find_packages
 from codecs import open
 from os import path
+
+from setuptools import setup, find_packages
 
 here = path.abspath(path.dirname(__file__))
 
@@ -11,12 +12,12 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='argdown',
     # semver
-    version='1.1.0',
+    version='1.1.5',
     description='Markdown export for the argparse module',
     long_description=long_description,
-    url='https://github.com/9999years/argdown',
-    author='Rebecca Turner',
-    author_email='',
+    url='https://github.com/devanshkv/argdown',
+    author=['Rebecca Turner', 'Devansh Agarwal'],
+    author_email='devansh.kv@gmail.com',
     license='MIT',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -26,6 +27,9 @@ setup(
         'Environment :: Console',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Operating System :: OS Independent',
         'Topic :: Text Processing :: Markup'
     ],
