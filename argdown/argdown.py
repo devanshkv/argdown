@@ -170,15 +170,14 @@ def console():
         add_argument()s have been executed. The only way to make sure the
         ArgumentParser object is created in the same way that it would be during normal
         script execution is to execute the script until the arguments are parsed. To do
-        this, argdown reads the input file(s) until it reads a line containing
-        `.parse_args(`. The rest of the file, being irrelevant to the command-line
+        this, argdown reads the input file(s) from `ArguementPaeser(` until it reads a line 
+        containing `.parse_args(`. The rest of the file, being irrelevant to the command-line
         invocation, is truncated, and a call to `argdown.md_help()` is inserted to
-        generate the Markdown from the parser. It is important to note that this means
-        the whole script up until the call to `parse_args` is executed in its entirety,
-        including any side-effects that may entail --- argdown does not attempt
-        to sanitize the code in any way.
+        generate the Markdown from the parser. Now the script between `ArguementPaeser(`
+        and `parse_args` is executed in its entirety, including any side-effects that may 
+        entail --- argdown does not attempt to sanitize the code in any way.
         
-        More info: github.com/9999years/argdown''')
+        More info: github.com/devanshkv/argdown''')
 
     argparser.add_argument('src_file', nargs='*',
                            help='The filename of a Python file to export Markdown from.')
@@ -239,7 +238,6 @@ def console():
                            version=f'%(prog)s {version}')
 
     args = argparser.parse_args()
-
 
     header = args.header
     usage_header = args.usage_header

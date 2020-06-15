@@ -1,1 +1,7 @@
 argdown.egg-info/**
+.idea/.gitignore
+.idea/argdown.iml
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
