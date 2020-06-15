@@ -289,19 +289,28 @@ SOFTWARE.''')
     def gen_help(src):
         lines = src.split('\n')
         indent = 0
-        parser_expr = re.compile(r'(\w+)\.parse_args\(')
+        startline = 0
+        end_parser_expr = re.compile(r'(\w+)\.parse_args\(')
+        start_parser_exper = re.compile(r'(\w+)\.ArgumentParser\(')
         for i, line in enumerate(lines):
+            if '.ArgumentParser(' in line:
+                parser = re.search(start_parser_exper, line)
+                if parser is not None:
+                    startline = i
+                    indent = get_indent(line)
             if '.parse_args(' in line:
-                parser = re.search(parser_expr, line)
+                parser = re.search(end_parser_expr, line)
                 if parser is not None:
                     lastline = i
                     parser = parser.group(1)
-                    indent = get_indent(line)
+                    #indent = get_indent(line)
                     break
-        lines = lines[:lastline - 1]
-        lines.insert(0, 'import argdown')
+        lines = lines[startline:lastline]
+        lines.insert(0, 'import argdown, argparse')
+        if indent > 0:
+            lines.insert(1, "if __name__ == '__main__':")
         lines.append(' ' * indent +
-            f'print(md_help({parser}, depth={depth},\n'
+            f'print(argdown.md_help({parser}, depth={depth},\n'
             f'header=\'{header}\', usage_header=\'{usage_header}\',\n'
             f'ref_header=\'{ref_header}\', args_header=\'{args_header}\',\n'
             f'spacey={spacey}, show_default={show_default},\n'
