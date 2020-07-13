@@ -170,13 +170,13 @@ def console():
         add_argument()s have been executed. The only way to make sure the
         ArgumentParser object is created in the same way that it would be during normal
         script execution is to execute the script until the arguments are parsed. To do
-        this, argdown reads the input file(s) from `ArguementPaeser(` until it reads a line 
+        this, argdown reads the input file(s) from `ArguementPaeser(` until it reads a line
         containing `.parse_args(`. The rest of the file, being irrelevant to the command-line
         invocation, is truncated, and a call to `argdown.md_help()` is inserted to
         generate the Markdown from the parser. Now the script between `ArguementPaeser(`
-        and `parse_args` is executed in its entirety, including any side-effects that may 
+        and `parse_args` is executed in its entirety, including any side-effects that may
         entail --- argdown does not attempt to sanitize the code in any way.
-        
+
         More info: github.com/devanshkv/argdown''')
 
     argparser.add_argument('src_file', nargs='*',
@@ -268,6 +268,7 @@ def console():
         lines = src.split('\n')
         indent = 0
         startline = 0
+        lastline = len(lines)
         end_parser_expr = re.compile(r'(\w+)\.parse_args\(')
         start_parser_exper = re.compile(r'(\w+)\.ArgumentParser\(')
         for i, line in enumerate(lines):
@@ -276,7 +277,8 @@ def console():
                 if parser is not None:
                     startline = i
                     indent = get_indent(line)
-            if '.parse_args(' in line:
+                    parser = parser.group(1)
+            elif '.parse_args(' in line:
                 parser = re.search(end_parser_expr, line)
                 if parser is not None:
                     lastline = i
@@ -295,7 +297,7 @@ def console():
                      f'truncate_help={truncate_help}, rst={use_rst}))')
         if function is not None:
             lines.append(function + '()')
-        exec('\n'.join(lines))
+        exec('\n'.join(lines), {'__name__': '__main__'})
 
     if args.use_stdin:
         # catenate stdinput, parse / render
