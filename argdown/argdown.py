@@ -11,7 +11,7 @@ cols = _os.environ['COLUMNS'] if 'COLUMNS' in _os.environ else 78
 def md_help(parser, *, depth=1, header='Arguments and Usage',
             usage_header='Usage', ref_header='Quick reference table',
             args_header='Arguments', spacey=False, show_default=True,
-            truncate_help=True, rst=False, hierarchy='#=-*+.'):
+            truncate_help=True, rst=False, hierarchy='#=-*+.', tiny=False, outfile=None):
     def code_block(code):
         if rst:
             out = '\n::\n\n'
@@ -67,11 +67,14 @@ def md_help(parser, *, depth=1, header='Arguments and Usage',
 
     global cols
     space = '\n' if spacey else ''
-    out = (header_text(header, depth)
-           + header_text(usage_header, depth + 1)
-           + code_block(parser.format_usage())
-           + header_text(args_header, depth + 1)
-           + header_text(ref_header, depth + 2))
+    if not tiny:
+        out = (header_text(header, depth)
+               + header_text(usage_header, depth + 1)
+               + code_block(parser.format_usage())
+               + header_text(args_header, depth + 1)
+               + header_text(ref_header, depth + 2))
+    else:
+        out = (code_block(parser.format_usage()) + header_text('Arguments', depth + 2))
 
     used_actions = {}
     args_detailed = ''
@@ -153,9 +156,17 @@ def md_help(parser, *, depth=1, header='Arguments and Usage',
         'default': 'Default',
         'help': 'Description'
     })
+    if not tiny:
+        out += options_table(options) + '\n' + args_detailed
+    else:
+        out += options_table(options)
 
-    out += options_table(options) + '\n' + args_detailed
-    return out
+    if outfile is None:
+        return out
+    else:
+        print("writing out to ", outfile)
+        with open(outfile, 'w') as f:
+            f.write(out)
 
 
 def console():
@@ -179,7 +190,7 @@ def console():
 
         More info: github.com/devanshkv/argdown''')
 
-    argparser.add_argument('src_file', nargs='*',
+    argparser.add_argument('src_file', nargs='+',
                            help='The filename of a Python file to export Markdown from.')
 
     argparser.add_argument('-', action='store_true', dest='use_stdin',
@@ -237,6 +248,10 @@ def console():
     argparser.add_argument('-v', '--version', action='version',
                            version=f'%(prog)s {version}')
 
+    argparser.add_argument('--tiny', action='store_true', help='Make only the usage table')
+
+    argparser.add_argument('-o', '--output', help='save in the output file', type=str, required=False, nargs=1)
+
     args = argparser.parse_args()
 
     header = args.header
@@ -249,6 +264,11 @@ def console():
     depth = args.header_depth
     function = args.function
     use_rst = args.rst
+    be_tiny = args.tiny
+    if args.output:
+        out_file = str(args.output[0])
+    else:
+        out_file = None
 
     import re
 
@@ -294,7 +314,7 @@ def console():
                      f'header=\'{header}\', usage_header=\'{usage_header}\',\n'
                      f'ref_header=\'{ref_header}\', args_header=\'{args_header}\',\n'
                      f'spacey={spacey}, show_default={show_default},\n'
-                     f'truncate_help={truncate_help}, rst={use_rst}))')
+                     f'truncate_help={truncate_help}, rst={use_rst} , tiny={be_tiny}, outfile="{out_file}"))')
         if function is not None:
             lines.append(function + '()')
         exec('\n'.join(lines), {'__name__': '__main__'})
